@@ -71,7 +71,7 @@ class SetupScreen extends StatelessWidget {
               ),
               const Spacer(),
               FilledButton(onPressed: () {
-                Navigator.pushReplacementNamed(context, LoginScreen.routeName);
+                Navigator.pushNamed(context, LoginScreen.routeName);
               }, child: Text(getTranslations(context).lets_start))
             ],
           ),

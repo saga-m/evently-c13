@@ -6,6 +6,10 @@ class ThemeProvider extends ChangeNotifier{
   static const String isLightModeKey = "theme";
 
   ThemeProvider(bool isLightTheme){
+    // if(isLightTheme == null){
+    //   currentTheme = ThemeMode.system;
+    //   return;
+    // }
     currentTheme = isLightTheme? ThemeMode.light : ThemeMode.dark;
   }
 
