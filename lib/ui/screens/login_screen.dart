@@ -4,6 +4,7 @@ import 'package:evently_c13/ui/screens/register_screen.dart';
 import 'package:evently_c13/ui/widgets/language_switcher.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
+import 'package:evently_c13/l10n/app_translations.dart';
 
 class LoginScreen extends StatelessWidget {
   static const String routeName = "/LoginScreen";
@@ -28,8 +29,9 @@ class LoginScreen extends StatelessWidget {
               TextFormField(
                 style: Theme.of(context).textTheme.bodyLarge,
                 cursorColor: Theme.of(context).primaryColor,
-                decoration: const InputDecoration(
-                    prefixIcon: Icon(EvaIcons.email), hintText: "Email"),
+                decoration: InputDecoration(
+                    prefixIcon: Icon(EvaIcons.email), hintText:
+                getTranslations(context).email),
               ),
               const SizedBox(
                 height: 15,
@@ -37,10 +39,10 @@ class LoginScreen extends StatelessWidget {
               TextFormField(
                 style: Theme.of(context).textTheme.bodyLarge,
                 cursorColor: Theme.of(context).primaryColor,
-                decoration: const InputDecoration(
+                decoration: InputDecoration(
                     suffixIcon: Icon(EvaIcons.eye),
                     prefixIcon: Icon(EvaIcons.lock),
-                    hintText: "Password"),
+                    hintText: getTranslations(context).password),
               ),
               const SizedBox(
                 height: 10,
@@ -52,11 +54,11 @@ class LoginScreen extends StatelessWidget {
                         Navigator.of(context)
                             .pushNamed(ForgetPassword.routeName);
                       },
-                      child: const Text("Forget password?"))),
+                      child: Text(getTranslations(context).forget_passwort))),
               const SizedBox(
                 height: 10,
               ),
-              FilledButton(onPressed: () {}, child: const Text("Login")),
+              FilledButton(onPressed: () {}, child: Text(getTranslations(context).login)),
               const SizedBox(
                 height: 10,
               ),
@@ -64,16 +66,16 @@ class LoginScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
                   Text(
-                    "Don’t Have Account ?",
+                    getTranslations(context).dont_have_account,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).pushNamed(RegisterScreen.routeName);
                     },
-                    child: const Text(
-                      "Create Account",
-                      style: TextStyle(
+                    child: Text(
+                      getTranslations(context).create_account,
+                      style: const TextStyle(
                         decoration: TextDecoration.underline,
                       ),
                     ),
@@ -83,16 +85,16 @@ class LoginScreen extends StatelessWidget {
               const SizedBox(
                 height: 16,
               ),
-              const Padding(
-                padding: EdgeInsets.all(16),
+              Padding(
+                padding: const EdgeInsets.all(16),
                 child: Row(
                   children: [
-                    Expanded(child: Divider()),
+                    const Expanded(child: Divider()),
                     Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 10),
-                      child: Text("Or"),
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Text(getTranslations(context).or),
                     ),
-                    Expanded(child: Divider()),
+                    const Expanded(child: Divider()),
                   ],
                 ),
               ),
@@ -115,7 +117,7 @@ class LoginScreen extends StatelessWidget {
                     const SizedBox(
                       width: 8,
                     ),
-                    const Text("Login With Google")
+                    Text(getTranslations(context).login_with_google)
                   ],
                 ),
               ),
