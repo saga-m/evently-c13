@@ -1,7 +1,9 @@
 import 'package:evently_c13/core/app_theme.dart';
 import 'package:evently_c13/firebase_options.dart';
+import 'package:evently_c13/providers/AuthProvider.dart';
 import 'package:evently_c13/providers/language_provider.dart';
 import 'package:evently_c13/providers/theme_provider.dart';
+import 'package:evently_c13/ui/screens/HomeScreen.dart';
 import 'package:evently_c13/ui/screens/forget_password.dart';
 import 'package:evently_c13/ui/screens/login_screen.dart';
 import 'package:evently_c13/ui/screens/register_screen.dart';
@@ -27,6 +29,7 @@ Future<void> main() async {
       ChangeNotifierProvider(create: (_){
         return LanguageProvider(sharedPreferences.getString(LanguageProvider.localeKey));
       }),
+      ChangeNotifierProvider(create: (_) => AuthProvider())
     ],
     child: MyApp(),)
   );
@@ -40,6 +43,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     LanguageProvider languageProvider = Provider.of<LanguageProvider>(context);
     ThemeProvider themeProvider = Provider.of<ThemeProvider>(context);
+    AuthProvider authProvider = Provider.of<AuthProvider>(context);
     return MaterialApp(
       // localizationsDelegates: context.localizationDelegates,
       // supportedLocales: context.supportedLocales,
@@ -48,11 +52,14 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.currentTheme,
-      initialRoute: SetupScreen.routeName,
+      initialRoute: authProvider.isLoggedIn()
+          ? Homescreen.routeName
+          : SetupScreen.routeName,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: Locale(languageProvider.currentLocale),
       routes: {
+        Homescreen.routeName: (_) => const Homescreen(),
         SetupScreen.routeName: (_) => const SetupScreen(),
         LoginScreen.routeName: (_) => LoginScreen(),
         RegisterScreen.routeName: (_) => RegisterScreen(),

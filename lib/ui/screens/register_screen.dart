@@ -2,6 +2,7 @@ import 'package:evently_c13/auth/firebase_auth_services.dart';
 import 'package:evently_c13/core/app_assets.dart';
 import 'package:evently_c13/core/app_colors.dart';
 import 'package:evently_c13/core/validation_utils.dart';
+import 'package:evently_c13/ui/screens/HomeScreen.dart';
 import 'package:evently_c13/ui/screens/login_screen.dart';
 import 'package:evently_c13/ui/widgets/language_switcher.dart';
 import 'package:flutter/material.dart';
@@ -191,7 +192,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     // show Loading
     // register with firebase auth service
     var response = await FirebaseAuthServices.createAccount(
-        emailController.text, passwordController.text);
+        emailController.text, passwordController.text, nameController.text);
     setState(() {
       isLoading = false;
     });
@@ -203,10 +204,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
       );
     } else if (response.userCredential != null) {
       // show register success message
-      showMessageDialog(
-        "Successful registration ${response.userCredential?.user?.uid}",
-        posActionTitle: "ok",
-      );
+      showMessageDialog("Successful registration", posActionTitle: "ok",
+          posAction: () {
+        Navigator.pushReplacementNamed(context, Homescreen.routeName);
+      });
     }
   }
 }

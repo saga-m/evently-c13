@@ -1,6 +1,7 @@
 import 'package:evently_c13/auth/firebase_auth_services.dart';
 import 'package:evently_c13/core/app_assets.dart';
 import 'package:evently_c13/core/validation_utils.dart';
+import 'package:evently_c13/ui/screens/HomeScreen.dart';
 import 'package:evently_c13/ui/screens/forget_password.dart';
 import 'package:evently_c13/ui/screens/register_screen.dart';
 import 'package:evently_c13/ui/widgets/language_switcher.dart';
@@ -212,7 +213,7 @@ class _LoginScreenState extends State<LoginScreen> {
     if (response.userCredential != null) {
       showMessageDialog("logged in successfully", posActionTitle: "ok",
           posAction: () {
-        // Navigator.pushNamed(context, HomeScreen.routeName);
+        Navigator.pushReplacementNamed(context, Homescreen.routeName);
       });
     } else {
       showMessageDialog(response.error?.errorMessage ?? "",

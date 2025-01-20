@@ -1,9 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:evently_c13/auth/RegisterResponse.dart';
+import 'package:evently_c13/db/dao/users_dao.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class FirebaseAuthServices {
-  static Future<AuthResponse> createAccount(
-      String email, String password) async {
+  static var db = FirebaseFirestore.instance;
+
+  static Future<AuthResponse> createAccount(String email, String password,
+      String name) async {
     try {
       final credential =
           await FirebaseAuth.instance.createUserWithEmailAndPassword(
@@ -11,7 +15,9 @@ class FirebaseAuthServices {
         password: password,
       );
 
-      return AuthResponse(userCredential: credential);
+      var user = await UsersDao.createUser(credential.user!.uid, email, name);
+
+      return AuthResponse(userCredential: credential, user: user);
     } on FirebaseAuthException catch (e) {
       var message = "";
       if (e.code == 'weak-password') {
@@ -33,8 +39,9 @@ class FirebaseAuthServices {
         email: email,
         password: password,
       );
-
-      return AuthResponse(userCredential: credential);
+      // read user from db
+      var user = await UsersDao.readUser(credential.user!.uid);
+      return AuthResponse(userCredential: credential, user: user);
     } on FirebaseAuthException catch (e) {
       var message = 'Wrong Email or Password';
       // if (e.code == 'user-not-found') {

@@ -1,10 +1,12 @@
+import 'package:evently_c13/db/model/AppUser.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthResponse {
   UserCredential? userCredential;
+  AppUser? user;
   Error? error;
 
-  AuthResponse({this.userCredential, this.error});
+  AuthResponse({this.userCredential, this.user, this.error});
 }
 
 class Error {
