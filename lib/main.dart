@@ -4,6 +4,7 @@ import 'package:evently_c13/providers/AuthProvider.dart';
 import 'package:evently_c13/providers/language_provider.dart';
 import 'package:evently_c13/providers/theme_provider.dart';
 import 'package:evently_c13/ui/screens/HomeScreen.dart';
+import 'package:evently_c13/ui/screens/add_event_screen.dart';
 import 'package:evently_c13/ui/screens/forget_password.dart';
 import 'package:evently_c13/ui/screens/login_screen.dart';
 import 'package:evently_c13/ui/screens/register_screen.dart';
@@ -21,18 +22,19 @@ Future<void> main() async {
   );
   // await EasyLocalization.ensureInitialized();
   SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-  runApp(
-    MultiProvider(providers: [
-      ChangeNotifierProvider(create: (_) => ThemeProvider(
-        sharedPreferences.getBool(ThemeProvider.isLightModeKey) ?? true
-      )),
-      ChangeNotifierProvider(create: (_){
-        return LanguageProvider(sharedPreferences.getString(LanguageProvider.localeKey));
+  runApp(MultiProvider(
+    providers: [
+      ChangeNotifierProvider(
+          create: (_) => ThemeProvider(
+              sharedPreferences.getBool(ThemeProvider.isLightModeKey) ?? true)),
+      ChangeNotifierProvider(create: (_) {
+        return LanguageProvider(
+            sharedPreferences.getString(LanguageProvider.localeKey));
       }),
       ChangeNotifierProvider(create: (_) => AuthProvider())
     ],
-    child: MyApp(),)
-  );
+    child: const MyApp(),
+  ));
 }
 
 class MyApp extends StatelessWidget {
@@ -51,14 +53,16 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: themeProvider.currentTheme,
-      initialRoute: authProvider.isLoggedIn()
-          ? Homescreen.routeName
-          : SetupScreen.routeName,
+      // themeMode: themeProvider.currentTheme,
+      // initialRoute: authProvider.isLoggedIn()
+      //     ? Homescreen.routeName
+      //     : SetupScreen.routeName,
+      initialRoute: Homescreen.routeName,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: Locale(languageProvider.currentLocale),
       routes: {
+        AddEventScreen.routeName: (_) => const AddEventScreen(),
         Homescreen.routeName: (_) => const Homescreen(),
         SetupScreen.routeName: (_) => const SetupScreen(),
         LoginScreen.routeName: (_) => LoginScreen(),
