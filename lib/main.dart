@@ -54,10 +54,9 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       // themeMode: themeProvider.currentTheme,
-      // initialRoute: authProvider.isLoggedIn()
-      //     ? Homescreen.routeName
-      //     : SetupScreen.routeName,
-      initialRoute: Homescreen.routeName,
+      initialRoute: authProvider.isLoggedIn()
+          ? Homescreen.routeName
+          : SetupScreen.routeName,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: Locale(languageProvider.currentLocale),

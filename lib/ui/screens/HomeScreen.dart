@@ -1,5 +1,6 @@
 import 'package:evently_c13/core/app_colors.dart';
 import 'package:evently_c13/core/dialog_utils.dart';
+import 'package:evently_c13/db/dao/events_dao.dart';
 import 'package:evently_c13/db/model/event_model.dart';
 import 'package:evently_c13/db/model/event_type_model.dart';
 import 'package:evently_c13/providers/AuthProvider.dart';
@@ -27,29 +28,22 @@ class _HomescreenState extends State<Homescreen> {
     });
   }
 
-  List<EventModel> events = [];
-  filterEventsById(int eventTypeId) {
-    if (eventTypeId != 0) {
-      events = EventModel.events
-          .where((element) => element.eventTypeId == eventTypeId)
-          .toList();
-    } else {
-      events = EventModel.events;
-    }
-  }
+  List<EventModel>? events = [];
 
   @override
   initState() {
     super.initState();
-    filterEventsById(0);
   }
 
+  var eventTypes = EventType.getEventTypes();
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
+    var authProvider = Provider.of<AuthProvider>(context, listen: false);
+
     return SafeArea(
       child: DefaultTabController(
-        length: 8,
+        length: eventTypes.length,
         child: Scaffold(
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
@@ -114,16 +108,13 @@ class _HomescreenState extends State<Homescreen> {
                   borderRadius: BorderRadius.circular(30),
                   color: AppColors.white),
               onTap: (index) {
-                if (index == 0) {
-                  filterEventsById(0);
-                } else {
-                  filterEventsById(EventType.eventTypes[index].id);
-                }
-                setState(() {});
+                setState(() {
+                  _selectedIndex = index;
+                });
               },
               isScrollable: true,
               tabs: [
-                ...EventType.eventTypes.map((eventType) => Padding(
+                ...eventTypes.map((eventType) => Padding(
                       padding: const EdgeInsets.all(10),
                       child: Row(
                         spacing: 8,
@@ -137,14 +128,41 @@ class _HomescreenState extends State<Homescreen> {
           ),
           body: TabBarView(
             children: [
-              ...EventType.eventTypes.map((eventType) => EventsListView(
-                    events: events,
+              ...eventTypes.map((eventType) => FutureBuilder(
+                    future: EventsDao.loadEvents(authProvider.appUser?.id ?? "",
+                        eventTypes[_selectedIndex].id),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        // waiting for future to complete
+                        return Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.hasError) {
+                        return Center(child: Text(snapshot.error.toString()));
+                      }
+                      var events = snapshot.data?.data;
+                      if (events == null || events.isEmpty) {
+                        return Center(
+                          child: Text("No Events Found"),
+                        );
+                      }
+                      return EventsListView(events: events);
+                    },
                   ))
             ],
           ),
         ),
       ),
     );
+  }
+
+  void loadEvents() async {
+    var authProvider = Provider.of<AuthProvider>(context, listen: false);
+    var eventsResponse = await EventsDao.loadEvents(
+        authProvider.appUser?.id ?? "", eventTypes[_selectedIndex].id);
+    setState(() {
+      events = eventsResponse.data;
+    });
   }
 
   List<Widget> get buildAppBarActions {
@@ -172,7 +190,8 @@ class _HomescreenState extends State<Homescreen> {
   }
 
   Column buildAppBarTitle() {
-    return const Column(
+    var authProvider = Provider.of<AuthProvider>(context, listen: false);
+    return Column(
       spacing: 4,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -184,7 +203,7 @@ class _HomescreenState extends State<Homescreen> {
               fontWeight: FontWeight.w400),
         ),
         Text(
-          "John Safwat",
+          authProvider.appUser?.name ?? "",
           style: TextStyle(
               fontSize: 25,
               color: AppColors.white,
