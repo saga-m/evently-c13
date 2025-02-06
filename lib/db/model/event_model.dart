@@ -9,6 +9,7 @@ class EventModel {
   Timestamp? date;
   int? time;
   int? eventTypeId;
+  bool isFavorite = false;
   EventModel({
     this.id,
     this.title,
@@ -18,6 +19,7 @@ class EventModel {
     this.date,
     this.time,
     this.eventTypeId,
+    this.isFavorite = false,
   });
 
   EventModel.fromFireStore(Map<String, dynamic>? data)
@@ -25,10 +27,12 @@ class EventModel {
             id: data?["id"],
             title: data?["title"],
             description: data?["description"],
+            eventTypeId: data?["eventTypeId"],
             lat: data?["lat"],
             long: data?["long"],
             date: data?["date"],
-            time: data?["time"]);
+            time: data?["time"],
+            isFavorite: data?["isFavorite"] ?? false);
 
   Map<String, dynamic> toFireStore() {
     return {
@@ -40,6 +44,7 @@ class EventModel {
       "date": date,
       "time": time,
       "eventTypeId": eventTypeId,
+      "isFavorite": isFavorite,
     };
   }
 }

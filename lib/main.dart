@@ -55,14 +55,14 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       // themeMode: themeProvider.currentTheme,
       initialRoute: authProvider.isLoggedIn()
-          ? Homescreen.routeName
+          ? HomeScreen.routeName
           : SetupScreen.routeName,
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       locale: Locale(languageProvider.currentLocale),
       routes: {
         AddEventScreen.routeName: (_) => const AddEventScreen(),
-        Homescreen.routeName: (_) => const Homescreen(),
+        HomeScreen.routeName: (_) => const HomeScreen(),
         SetupScreen.routeName: (_) => const SetupScreen(),
         LoginScreen.routeName: (_) => LoginScreen(),
         RegisterScreen.routeName: (_) => RegisterScreen(),

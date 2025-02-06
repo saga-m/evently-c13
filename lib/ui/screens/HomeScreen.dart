@@ -1,46 +1,63 @@
 import 'package:evently_c13/core/app_colors.dart';
 import 'package:evently_c13/core/dialog_utils.dart';
 import 'package:evently_c13/db/dao/events_dao.dart';
+import 'package:evently_c13/db/model/AppUser.dart';
 import 'package:evently_c13/db/model/event_model.dart';
 import 'package:evently_c13/db/model/event_type_model.dart';
 import 'package:evently_c13/providers/AuthProvider.dart';
 import 'package:evently_c13/ui/screens/add_event_screen.dart';
 import 'package:evently_c13/ui/screens/login_screen.dart';
+import 'package:evently_c13/ui/screens/tabs/favorite/favorite_tab.dart';
+import 'package:evently_c13/ui/screens/tabs/home/home_tab.dart';
+import 'package:evently_c13/ui/screens/tabs/map/map_tab.dart';
+import 'package:evently_c13/ui/screens/tabs/profile/profile_tab.dart';
 import 'package:evently_c13/ui/widgets/events_list_view.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-class Homescreen extends StatefulWidget {
+class HomeScreen extends StatefulWidget {
   static const String routeName = "home";
 
-  const Homescreen({super.key});
+  const HomeScreen({super.key});
 
   @override
-  State<Homescreen> createState() => _HomescreenState();
+  State<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomescreenState extends State<Homescreen> {
-  int _selectedIndex = 0;
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedTabIndex = 0;
+  int _selectedEventTypeIndex = 0;
 
-  void _onItemTapped(int index) {
+  void _onTopBarTabClick(int index) {
     setState(() {
-      _selectedIndex = index;
+      _selectedEventTypeIndex = index;
     });
   }
 
-  List<EventModel>? events = [];
+  void _onBottomNavBarTapped(int index) {
+    setState(() {
+      _selectedTabIndex = index;
+    });
+  }
+
 
   @override
   initState() {
     super.initState();
   }
-
   var eventTypes = EventType.getEventTypes();
+
+  List<Widget?> bottomNavTabs = [
+    null,
+    MapTab(),
+    FavoriteTab(),
+    ProfileTab(),
+  ];
   @override
   Widget build(BuildContext context) {
     final height = MediaQuery.of(context).size.height;
-    var authProvider = Provider.of<AuthProvider>(context, listen: false);
-
+    var authProvider = Provider.of<AuthProvider>(context);
+    print(authProvider.appUser);
     return SafeArea(
       child: DefaultTabController(
         length: eventTypes.length,
@@ -87,9 +104,9 @@ class _HomescreenState extends State<Homescreen> {
                 backgroundColor: AppColors.purple,
               ),
             ],
-            currentIndex: _selectedIndex,
-            onTap: _onItemTapped,
-          ),
+              currentIndex: _selectedTabIndex,
+              onTap: _onBottomNavBarTapped,
+            ),
           appBar: AppBar(
             toolbarHeight: height * 0.15,
             backgroundColor: AppColors.purple,
@@ -98,8 +115,9 @@ class _HomescreenState extends State<Homescreen> {
                     bottomLeft: Radius.circular(20),
                     bottomRight: Radius.circular(20))),
             centerTitle: false,
-            bottom: TabBar(
-              unselectedLabelColor: AppColors.white,
+              bottom: _selectedTabIndex == 0
+                  ? TabBar(
+                      unselectedLabelColor: AppColors.white,
               labelColor: AppColors.purple,
               indicatorSize: TabBarIndicatorSize.label,
               dividerHeight: 0,
@@ -107,12 +125,8 @@ class _HomescreenState extends State<Homescreen> {
               indicator: BoxDecoration(
                   borderRadius: BorderRadius.circular(30),
                   color: AppColors.white),
-              onTap: (index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              isScrollable: true,
+                      onTap: _onTopBarTabClick,
+                      isScrollable: true,
               tabs: [
                 ...eventTypes.map((eventType) => Padding(
                       padding: const EdgeInsets.all(10),
@@ -122,48 +136,18 @@ class _HomescreenState extends State<Homescreen> {
                       ),
                     ))
               ],
-            ),
-            title: buildAppBarTitle(),
-            actions: buildAppBarActions,
+                    )
+                  : null,
+              title: buildAppBarTitle(authProvider.appUser),
+              actions: buildAppBarActions,
           ),
-          body: TabBarView(
-            children: [
-              ...eventTypes.map((eventType) => FutureBuilder(
-                    future: EventsDao.loadEvents(authProvider.appUser?.id ?? "",
-                        eventTypes[_selectedIndex].id),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        // waiting for future to complete
-                        return Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (snapshot.hasError) {
-                        return Center(child: Text(snapshot.error.toString()));
-                      }
-                      var events = snapshot.data?.data;
-                      if (events == null || events.isEmpty) {
-                        return Center(
-                          child: Text("No Events Found"),
-                        );
-                      }
-                      return EventsListView(events: events);
-                    },
-                  ))
-            ],
-          ),
-        ),
+            body: _selectedTabIndex == 0
+                ? HomeTab(eventTypes[_selectedEventTypeIndex])
+                : bottomNavTabs[_selectedTabIndex]),
       ),
     );
   }
 
-  void loadEvents() async {
-    var authProvider = Provider.of<AuthProvider>(context, listen: false);
-    var eventsResponse = await EventsDao.loadEvents(
-        authProvider.appUser?.id ?? "", eventTypes[_selectedIndex].id);
-    setState(() {
-      events = eventsResponse.data;
-    });
-  }
 
   List<Widget> get buildAppBarActions {
     return [
@@ -189,8 +173,7 @@ class _HomescreenState extends State<Homescreen> {
     ];
   }
 
-  Column buildAppBarTitle() {
-    var authProvider = Provider.of<AuthProvider>(context, listen: false);
+  Column buildAppBarTitle(AppUser? appUser) {
     return Column(
       spacing: 4,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -203,7 +186,7 @@ class _HomescreenState extends State<Homescreen> {
               fontWeight: FontWeight.w400),
         ),
         Text(
-          authProvider.appUser?.name ?? "",
+          appUser?.name ?? "",
           style: TextStyle(
               fontSize: 25,
               color: AppColors.white,

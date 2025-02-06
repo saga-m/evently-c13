@@ -71,4 +71,15 @@ class EventType {
           )),
     ];
   }
+
+  static String getEventImageById(int id) {
+    if (id == 0) return "assets/images/sport.png";
+    var types = getEventTypes();
+    for (EventType eventType in types) {
+      if (eventType.id == id) {
+        return eventType.imagePath;
+      }
+    }
+    return "assets/images/sport.png";
+  }
 }

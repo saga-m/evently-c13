@@ -9,3 +9,8 @@ String formatTime(DateTime time) {
   DateFormat dateFormat = DateFormat("hh:mm a");
   return dateFormat.format(time);
 }
+
+String getMonthNameFromDate(DateTime dateTime) {
+  DateFormat dateFormat = DateFormat("MMM");
+  return dateFormat.format(dateTime);
+}

@@ -78,4 +78,28 @@ class EventsDao {
       return DataBaseResponse(isSuccess: false, exception: ex);
     }
   }
+
+  static Future<void> updateEvent(String userId, EventModel event) async {
+    var docRef = getEventsCollection(userId).doc(event.id);
+    await docRef.set(event);
+  }
+
+  static Future<DataBaseResponse<List<EventModel>>> loadFavoriteEvents(
+      String userId) async {
+    try {
+      var collectionReference = getEventsCollection(userId);
+
+      var eventsSnapshots =
+          await collectionReference.where("isFavorite", isEqualTo: true).get();
+
+      var events = eventsSnapshots.docs
+          .map(
+            (docSnapshot) => docSnapshot.data(),
+          )
+          .toList();
+      return DataBaseResponse(isSuccess: true, data: events);
+    } on Exception catch (ex) {
+      return DataBaseResponse(isSuccess: false, exception: ex);
+    }
+  }
 }
